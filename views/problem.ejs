@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Problem</title>
+
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:600&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
+
+    <style>
+        @font-face {
+            font-family: "Montserrat";
+        }
+
+        * {
+            font-family: Montserrat;
+        }
+    </style>
+</head>
+
+<body>
+    <% if (successMessage && successMessage.length > 0) { %>
+        <div class="alert alert-success" id="flashMessage">
+            <%= successMessage %>
+        </div>
+        <script>
+            // Hapus flash data setelah beberapa detik
+            setTimeout(function() {
+                var flashMessage = document.getElementById('flashMessage');
+                if (flashMessage) {
+                    flashMessage.style.display = 'none';
+                }
+            }, 5000); // Ubah angka 5000 menjadi jumlah milidetik yang diinginkan
+        </script>
+    <% } %>
+    <div id="app">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+            <div class="container">
+                <a class="navbar-brand" href="#">TMMIN</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll"
+                    aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarScroll">
+                    <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/dashboard">Beranda</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/problem">Problem</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/fixproblem">Fix</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/tmpproblem">Temporrary</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/delayproblem">Delay</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/onprogresproblem">On Progress</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/datakpi">Data KPI</a>
+                        </li>
+                    </ul>
+                    <div class="d-flex">
+                        <ul class="navbar-nav me-auto my-lg-0">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    <i class="fa fa-user"></i> Profil
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="/logout" id="logout-button">
+                                            <i class="fa fa-sign-out-alt"></i> Logout
+                                        </a>
+                                    </li>
+                                </ul>
+
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="py-4">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-12">
+                        <div class="card bg-success rounded text-white shadow my-4">
+                            <div class="card-body">
+                                <p id="welcome-message" class="h5">
+                                    <b>Selamat Datang, <%= USER_NM %></b>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="card rounded shadow my-4">
+                            <div class="card-header">
+                                <p class="h6">
+                                    <i class="fa fa-chart-area"></i> Semua Data Problem
+                                </p>
+                            </div>
+                            <div class="card-body table-responsive">
+                                <div class="container">
+                                    <div class="row">
+                                        <table id="myTable" class="table table-hover table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>BNF Ticket No</th>
+                                                    <th>Problem Date</th>
+                                                    <th>Shop</th>
+                                                    <th>Shift</th>
+                                                    <th>Group</th>
+                                                    <th>Line</th>
+                                                    <th>Station</th>
+                                                    <th>Machine</th>
+                                                    <th>Error Code</th>
+                                                    <th>Problem Description</th>
+                                                    <th>EST</th>
+                                                    <th>Temp C/M</th>
+                                                    <th>Fix C/M</th>
+                                                    <th>PIC</th>
+                                                    <th style="width: 25px;">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% combinedData.forEach(data=> { %>
+                                                    <tr>
+                                                        <td>
+                                                            <%= data.BNF_TICKET_NO %>
+                                                        </td>
+                                                        <td>
+                                                            <%= data.PROBLEM_DT %>
+                                                        </td>
+                                                        <td>
+                                                            <%= data.SHOP_NM %>
+                                                        </td>
+                                                        <td>
+                                                            <%= data.SHIFT_CD %>
+                                                        </td>
+                                                        <td>
+                                                            <%= data.GROUP_NM %>
+                                                        </td>
+                                                        <td>
+                                                            <%= data.LINE_NM %>
+                                                        </td>
+                                                        <td>
+                                                            <%= data.STATION_NM %>
+                                                        </td>
+                                                        <td>
+                                                            <%= data.FE_NM %>
+                                                        </td>
+                                                        <td>
+                                                            <%= data.ERROR_CD %>
+                                                        </td>
+                                                        <td>
+                                                            <%= data.PROBLEM_DESCRIPTION %>
+                                                        </td>
+                                                        <td>
+                                                            <%= data.EST %>
+                                                        </td>
+                                                        <td>
+                                                            <%= data.TMP_CM %>
+                                                        </td>
+                                                        <td>
+                                                            <%= data.FIX_CM %>
+                                                        </td>
+                                                        <td>
+                                                            <%= data.USER_NM %>
+                                                        </td>
+                                                        <td>
+                                                            <!-- Dalam loop di dalam tabel -->
+                                                            <% if (data.CM_STS==='F' ) { %>
+                                                                <!-- Jika ACTION sudah OK atau Status F, tampilkan tombol OK yang dinonaktifkan -->
+                                                                <button class="btn btn-sm btn-success" type="button"
+                                                                    data-bs-toggle="modal" data-bs-target="#ModalFix"
+                                                                    data-bnf-ticket="<%= data.BNF_TICKET_NO %>"
+                                                                    data-est="<%= data.EST %>"
+                                                                    data-cm-sts="<%= data.CM_STS %>"
+                                                                    data-tmp-cm="<%= data.TMP_CM %>"
+                                                                    data-fix-cm="<%= data.FIX_CM %>"
+                                                                    data-fix-cm-plan="<%= data.FIX_CM_PLAN %>"
+                                                                    data-fix-cm-action="<%= data.FIX_CM_ACT %>"
+                                                                    data-q1="<%= data.Q1 %>" data-q2="<%= data.Q2 %>"
+                                                                    data-q3="<%= data.Q3 %>" data-q4="<%= data.Q4 %>"
+                                                                    data-q5="<%= data.Q5 %>" data-q6="<%= data.Q6 %>">
+                                                                    Fix
+                                                                </button>
+                                                                <% } else if (data.CM_STS==='T' && data.FIX_CM_NM=='On Progress' ) { %>
+                                                                    <button class="btn btn-sm btn-warning editButton"
+                                                                        type="button" data-bs-toggle="modal"
+                                                                        data-bs-target="#ModalEdit"
+                                                                        data-bnf-ticket="<%= data.BNF_TICKET_NO %>"
+                                                                        data-est="<%= data.EST %>"
+                                                                        data-cm-sts="<%= data.CM_STS %>"
+                                                                        data-tmp-cm="<%= data.TMP_CM %>"
+                                                                        data-fix-cm="<%= data.FIX_CM %>"
+                                                                        data-fix-cm-plan="<%= data.FIX_CM_PLAN %>"
+                                                                        data-q1="<%= data.Q1 %>"
+                                                                        data-q2="<%= data.Q2 %>"
+                                                                        data-q3="<%= data.Q3 %>"
+                                                                        data-q4="<%= data.Q4 %>"
+                                                                        data-q5="<%= data.Q5 %>"
+                                                                        data-q6="<%= data.Q6 %>"
+                                                                        data-production-id="<%= data.PRODUCTION_ID %>">
+                                                                        Tmp OP
+                                                                    </button>
+                                        
+                                                                    <% }
+                                                                    else if (data.CM_STS==='T' && data.FIX_CM_NM=='Delay' ) { %>
+                                                                        <button class="btn btn-sm btn-danger editButton"
+                                                                            type="button" data-bs-toggle="modal"
+                                                                            data-bs-target="#ModalEdit"
+                                                                            data-bnf-ticket="<%= data.BNF_TICKET_NO %>"
+                                                                            data-est="<%= data.EST %>"
+                                                                            data-cm-sts="<%= data.CM_STS %>"
+                                                                            data-tmp-cm="<%= data.TMP_CM %>"
+                                                                            data-fix-cm="<%= data.FIX_CM %>"
+                                                                            data-fix-cm-plan="<%= data.FIX_CM_PLAN %>"
+                                                                            data-q1="<%= data.Q1 %>"
+                                                                            data-q2="<%= data.Q2 %>"
+                                                                            data-q3="<%= data.Q3 %>"
+                                                                            data-q4="<%= data.Q4 %>"
+                                                                            data-q5="<%= data.Q5 %>"
+                                                                            data-q6="<%= data.Q6 %>"
+                                                                            data-production-id="<%= data.PRODUCTION_ID %>">
+                                                                            Tmp D
+                                                                        </button>
+                                                                        
+                                                                        <% }
+                                                                         else { %>
+                                                                        <!-- Jika ACTION belum OK dan Status bukan F, tampilkan tombol C/M -->
+                                                                        <button class="btn btn-sm btn-primary"
+                                                                            type="button" data-bs-toggle="modal"
+                                                                            data-bs-target="#ModalCM"
+                                                                            data-bnf-ticket="<%= data.BNF_TICKET_NO %>"
+                                                                            data-action="<%= data.ACTION %>">
+                                                                            C/M
+                                                                        </button>
+                                                                        <% } %>
+                                                        </td>
+                                                    </tr>
+                                                    <% }); %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Modal CM -->
+        <div class="modal fade" id="ModalCM" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="submit-cm" method="POST" id="inputcm">
+                        <input type="hidden" name="BNF_TICKET_NO" id="bnfTicketNo" value="">
+                        <div class="modal-header">
+                            <div class="row">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Input Counter Measure</h1>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">EST<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="est" name="EST"
+                                    placeholder="Enter EST" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Status<small class="text-danger">*</small></label>
+                                <select class="form-select" id="status" name="CM_NM" required>
+                                    <option value="" selected hidden>Choose Status</option>
+                                    <option value="T">Temporary</option>
+                                    <option value="F">Fixed</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Temporary Counter Measure<small
+                                        class="text-danger">*</small></label>
+                                <textarea class="form-control" name="TMP_CM" id="tmpcm" cols="10" rows="2"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Fix Counter Measure<small
+                                        class="text-danger">*</small></label>
+                                <textarea class="form-control" name="FIX_CM" id="fixcm" cols="10" rows="2"
+                                    disabled></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Fix C/M Plan<small class="text-danger">*</small></label>
+                                <input type="date" class="form-control" id="fixplan" name="FIX_CM_PLAN"
+                                    placeholder="Date">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Fix C/M Action<small class="text-danger">*</small></label>
+                                <input type="date" class="form-control" id="fixaction" name="FIX_CM_ACT" disabled
+                                    placeholder="Date">
+                            </div>
+                            <div class="mb-3" id="q1Container" style="display: none;">
+                                <label class="form-label">Q1<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q1" name="Q1"
+                                    placeholder="Enter Q1">
+                            </div>
+                            <div class="mb-3" id="q2Container" style="display: none;">
+                                <label class="form-label">Q2<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q2" name="Q2"
+                                    placeholder="Enter Q2">
+                            </div>
+                            <div class="mb-3" id="q3Container" style="display: none;">
+                                <label class="form-label">Q3<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q3" name="Q3"
+                                    placeholder="Enter Q3">
+                            </div>
+                            <div class="mb-3" id="q4Container" style="display: none;">
+                                <label class="form-label">Q4<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q4" name="Q4"
+                                    placeholder="Enter Q4">
+                            </div>
+                            <div class="mb-3" id="q5Container" style="display: none;">
+                                <label class="form-label">Q5<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q5" name="Q5"
+                                    placeholder="Enter Q5">
+                            </div>
+                            <div class="mb-3" id="q6Container" style="display: none;">
+                                <label class="form-label">Q6<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q6" name="Q6"
+                                    placeholder="Enter Q6">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var modalCM = document.getElementById('ModalCM');
+                var status = document.getElementById('status');
+                var fixcm = document.getElementById('fixcm');
+                var fixaction = document.getElementById('fixaction');
+
+                modalCM.addEventListener('show.bs.modal', function (event) {
+                    // Mendengarkan perubahan pada elemen status
+                    status.addEventListener('change', function () {
+                        var statusValue = status.value;
+
+                        // Menentukan apakah harus men-disable elemen fixcm dan fixaction
+                        fixcm.disabled = (statusValue === 'T');
+                        fixaction.disabled = (statusValue === 'T');
+                    });
+
+                    // Memanggil perubahan status saat modal ditampilkan
+                    status.dispatchEvent(new Event('change'));
+                });
+            });
+        </script>
+        <script>
+            // Fungsi untuk membersihkan nilai input pada formulir
+            function clearFormCM() {
+                document.getElementById("est").value = null;
+                document.getElementById("status").value = null;
+                document.getElementById("tmpcm").value = null;
+                document.getElementById("fixcm").value = null;
+                document.getElementById("fixplan").value = null;
+                document.getElementById("fixaction").value = null;
+                document.getElementById("q1").value = null;
+                document.getElementById("q2").value = null;
+                document.getElementById("q3").value = null;
+                document.getElementById("q4").value = null;
+                document.getElementById("q5").value = null;
+                document.getElementById("q6").value = null;
+
+                const q1Container = document.getElementById('q1Container').style.display = 'none';
+                const q2Container = document.getElementById('q2Container').style.display = 'none';
+                const q3Container = document.getElementById('q3Container').style.display = 'none';
+                const q4Container = document.getElementById('q4Container').style.display = 'none';
+                const q5Container = document.getElementById('q5Container').style.display = 'none';
+                const q6Container = document.getElementById('q6Container').style.display = 'none';
+            }
+        
+            // Tambahkan event listener untuk menangkap acara penutupan modal
+            document.getElementById("ModalCM").addEventListener("hidden.bs.modal", function () {
+                clearFormCM(); // Panggil fungsi clearForm saat modal ditutup
+            });
+        </script>
+
+        <!-- Modal Edit -->
+        <div class="modal fade" id="ModalEdit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="submit-edit" method="POST" id="inputedit">
+                        <input type="hidden" name="BNF_TICKET_NO" id="bnfTicketNoEdit" value="">
+                        <input type="hidden" name="PRODUCTION_ID" id="productionidEdit" value="">
+                        <div class="modal-header">
+                            <div class="row">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Input Counter Measure</h1>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">EST<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="estEdit" name="EST"
+                                    placeholder="Enter EST" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Status<small class="text-danger">*</small></label>
+                                <select class="form-select" id="statusEdit" name="CM_NM" required>
+                                    <option value="" selected hidden>Choose Status</option>
+                                    <option value="T">Temporary</option>
+                                    <option value="F">Fixed</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Temporary Counter Measure<small
+                                        class="text-danger">*</small></label>
+                                <textarea class="form-control" name="TMP_CM" id="tmpcmEdit" cols="10"
+                                    rows="2"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Fix Counter Measure<small
+                                        class="text-danger">*</small></label>
+                                <textarea class="form-control" name="FIX_CM" id="fixcmEdit" cols="10" disabled
+                                    rows="2"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Fix C/M Plan<small class="text-danger">*</small></label>
+                                <input type="date" class="form-control" id="fixplanEdit" name="FIX_CM_PLAN"
+                                    placeholder="Date" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Fix C/M Action<small class="text-danger">*</small></label>
+                                <input type="date" class="form-control" id="fixactionEdit" name="FIX_CM_ACT" disabled
+                                    placeholder="Date">
+                            </div>
+                            <div class="mb-3" id="q1ContainerEdit" style="display: none;">
+                                <label class="form-label">Q1<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q1Edit" name="Q1"
+                                    placeholder="Enter Q1" disabled>
+                            </div>
+                            <div class="mb-3" id="q2ContainerEdit" style="display: none;">
+                                <label class="form-label">Q2<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q2Edit" name="Q2"
+                                    placeholder="Enter Q2" disabled>
+                            </div>
+                            <div class="mb-3" id="q3ContainerEdit" style="display: none;">
+                                <label class="form-label">Q3<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q3Edit" name="Q3"
+                                    placeholder="Enter Q3" disabled>
+                            </div>
+                            <div class="mb-3" id="q4ContainerEdit" style="display: none;">
+                                <label class="form-label">Q4<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q4Edit" name="Q4"
+                                    placeholder="Enter Q4" disabled>
+                            </div>
+                            <div class="mb-3" id="q5ContainerEdit" style="display: none;">
+                                <label class="form-label">Q5<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q5Edit" name="Q5"
+                                    placeholder="Enter Q5" disabled>
+                            </div>
+                            <div class="mb-3" id="q6ContainerEdit" style="display: none;">
+                                <label class="form-label">Q6<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q6Edit" name="Q6"
+                                    placeholder="Enter Q6" disabled>
+                            </div>
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    var modalEdit = document.getElementById('ModalEdit');
+                                    var statusEdit = document.getElementById('statusEdit');
+                                    var fixcmEdit = document.getElementById('fixcmEdit');
+                                    var fixactionEdit = document.getElementById('fixactionEdit');
+
+                                    modalEdit.addEventListener('show.bs.modal', function (event) {
+                                        var button = event.relatedTarget;
+                                        console.log(button.getAttribute('data-est'));
+
+                                        // Mengisi nilai default dari atribut data
+                                        document.getElementById('bnfTicketNoEdit').value = button.getAttribute('data-bnf-ticket');
+                                        document.getElementById('productionidEdit').value = button.getAttribute('data-production-id');
+                                        document.getElementById('estEdit').value = button.getAttribute('data-est');
+                                        document.getElementById('statusEdit').value = button.getAttribute('data-cm-sts');
+                                        document.getElementById('tmpcmEdit').value = button.getAttribute('data-tmp-cm');
+                                        document.getElementById('fixcmEdit').value = button.getAttribute('data-fix-cm');
+                                        document.getElementById('fixplanEdit').value = new Date(button.getAttribute('data-fix-cm-plan')).toISOString().split('T')[0];
+
+                                        if (document.getElementById('estEdit').value > 10) {
+                                            document.getElementById('q1Edit').value = button.getAttribute('data-q1');
+                                            document.getElementById('q2Edit').value = button.getAttribute('data-q2');
+                                            document.getElementById('q3Edit').value = button.getAttribute('data-q3');
+                                            document.getElementById('q4Edit').value = button.getAttribute('data-q4');
+                                            document.getElementById('q5Edit').value = button.getAttribute('data-q5');
+                                            document.getElementById('q6Edit').value = button.getAttribute('data-q6');
+                                            const q1ContainerEdit = document.getElementById('q1ContainerEdit').style.display = 'block';
+                                            const q2ContainerEdit = document.getElementById('q2ContainerEdit').style.display = 'block';
+                                            const q3ContainerEdit = document.getElementById('q3ContainerEdit').style.display = 'block';
+                                            const q4ContainerEdit = document.getElementById('q4ContainerEdit').style.display = 'block';
+                                            const q5ContainerEdit = document.getElementById('q5ContainerEdit').style.display = 'block';
+                                            const q6ContainerEdit = document.getElementById('q6ContainerEdit').style.display = 'block';
+                                        }
+                                        else
+                                        {
+                                            const q1Edit = document.getElementById('q1Edit');
+                                            const q2Edit = document.getElementById('q2Edit');
+                                            const q3Edit = document.getElementById('q3Edit');
+                                            const q4Edit = document.getElementById('q4Edit');
+                                            const q5Edit = document.getElementById('q5Edit');
+                                            const q6Edit = document.getElementById('q6Edit');
+
+                                            q1Edit.value = null;
+                                            q2Edit.value = null;
+                                            q3Edit.value = null;
+                                            q4Edit.value = null;
+                                            q5Edit.value = null;
+                                            q6Edit.value = null;
+
+                                            const q1ContainerEdit = document.getElementById('q1ContainerEdit').style.display = 'none';
+                                            const q2ContainerEdit = document.getElementById('q2ContainerEdit').style.display = 'none';
+                                            const q3ContainerEdit = document.getElementById('q3ContainerEdit').style.display = 'none';
+                                            const q4ContainerEdit = document.getElementById('q4ContainerEdit').style.display = 'none';
+                                            const q5ContainerEdit = document.getElementById('q5ContainerEdit').style.display = 'none';
+                                            const q6ContainerEdit = document.getElementById('q6ContainerEdit').style.display = 'none';
+                                        };
+
+                                        // Mendengarkan perubahan pada elemen statusEdit
+                                        statusEdit.addEventListener('change', function () {
+                                            var statusValue = statusEdit.value;
+
+                                            // Menentukan apakah harus men-disable elemen fixcmEdit dan fixactionEdit
+                                            fixcmEdit.disabled = (statusValue === 'T');
+                                            fixactionEdit.disabled = (statusValue === 'T');
+                                        });
+
+                                        // Memanggil perubahan status saat modal ditampilkan
+                                        statusEdit.dispatchEvent(new Event('change'));
+                                    });
+                                });
+                            </script>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Fix -->
+        <div class="modal fade" id="ModalFix" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="inputfix">
+                        <input type="hidden" name="BNF_TICKET_NO" id="bnfTicketNoFix" value="">
+                        <div class="modal-header">
+                            <div class="row">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Input Counter Measure</h1>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">EST<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="estFix" name="EST"
+                                    placeholder="Enter EST" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Status<small class="text-danger">*</small></label>
+                                <select class="form-select" id="statusFix" name="CM_NM" disabled>
+                                    <option value="" selected hidden>Choose Status</option>
+                                    <option value="T">Temporary</option>
+                                    <option value="F">Fixed</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Temporary Counter Measure<small
+                                        class="text-danger">*</small></label>
+                                <textarea class="form-control" name="TMP_CM" id="tmpcmFix" cols="10"
+                                    rows="2" disabled></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Fix Counter Measure<small
+                                        class="text-danger">*</small></label>
+                                <textarea class="form-control" name="FIX_CM" id="fixcmFix" cols="10" disabled
+                                    rows="2"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Fix C/M Plan<small class="text-danger">*</small></label>
+                                <input type="date" class="form-control" id="fixplanFix" name="FIX_CM_PLAN"
+                                    placeholder="Date" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Fix C/M Action<small class="text-danger">*</small></label>
+                                <input type="date" class="form-control" id="fixactionFix" name="FIX_CM_ACT" disabled
+                                    placeholder="Date">
+                            </div>
+                            <div class="mb-3" id="q1ContainerFix" style="display: none;">
+                                <label class="form-label">Q1<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q1Fix" name="Q1"
+                                    placeholder="Enter Q1" disabled>
+                            </div>
+                            <div class="mb-3" id="q2ContainerFix" style="display: none;">
+                                <label class="form-label">Q2<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q2Fix" name="Q2"
+                                    placeholder="Enter Q2" disabled>
+                            </div>
+                            <div class="mb-3" id="q3ContainerFix" style="display: none;">
+                                <label class="form-label">Q3<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q3Fix" name="Q3"
+                                    placeholder="Enter Q3" disabled>
+                            </div>
+                            <div class="mb-3" id="q4ContainerFix" style="display: none;">
+                                <label class="form-label">Q4<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q4Fix" name="Q4"
+                                    placeholder="Enter Q4" disabled>
+                            </div>
+                            <div class="mb-3" id="q5ContainerFix" style="display: none;">
+                                <label class="form-label">Q5<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q5Fix" name="Q5"
+                                    placeholder="Enter Q5" disabled>
+                            </div>
+                            <div class="mb-3" id="q6ContainerFix" style="display: none;">
+                                <label class="form-label">Q6<small class="text-danger">*</small></label>
+                                <input type="number" step="0.1" class="form-control" id="q6Fix" name="Q6"
+                                    placeholder="Enter Q6" disabled>
+                            </div>
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    var modalFix = document.getElementById('ModalFix');
+                                    var statusFix = document.getElementById('statusFix');
+                                    var fixcmFix = document.getElementById('fixcmFix');
+                                    var fixactionFix = document.getElementById('fixactionFix');
+
+                                    modalFix.addEventListener('show.bs.modal', function (event) {
+                                        var button = event.relatedTarget;
+                                        console.log(button.getAttribute('data-est'));
+
+                                        // Mengisi nilai default dari atribut data
+                                        document.getElementById('bnfTicketNoFix').value = button.getAttribute('data-bnf-ticket');
+                                        document.getElementById('estFix').value = button.getAttribute('data-est');
+                                        document.getElementById('statusFix').value = button.getAttribute('data-cm-sts');
+                                        document.getElementById('tmpcmFix').value = button.getAttribute('data-tmp-cm');
+                                        document.getElementById('fixcmFix').value = button.getAttribute('data-fix-cm');
+                                        document.getElementById('fixplanFix').value = new Date(button.getAttribute('data-fix-cm-plan')).toISOString().split('T')[0];
+                                        document.getElementById('fixactionFix').value = new Date(button.getAttribute('data-fix-cm-action')).toISOString().split('T')[0];
+
+                                        if (document.getElementById('estFix').value > 10) {
+                                            document.getElementById('q1Fix').value = button.getAttribute('data-q1');
+                                            document.getElementById('q2Fix').value = button.getAttribute('data-q2');
+                                            document.getElementById('q3Fix').value = button.getAttribute('data-q3');
+                                            document.getElementById('q4Fix').value = button.getAttribute('data-q4');
+                                            document.getElementById('q5Fix').value = button.getAttribute('data-q5');
+                                            document.getElementById('q6Fix').value = button.getAttribute('data-q6');
+                                            const q1ContainerFix = document.getElementById('q1ContainerFix').style.display = 'block';
+                                            const q2ContainerFix = document.getElementById('q2ContainerFix').style.display = 'block';
+                                            const q3ContainerFix = document.getElementById('q3ContainerFix').style.display = 'block';
+                                            const q4ContainerFix = document.getElementById('q4ContainerFix').style.display = 'block';
+                                            const q5ContainerFix = document.getElementById('q5ContainerFix').style.display = 'block';
+                                            const q6ContainerFix = document.getElementById('q6ContainerFix').style.display = 'block';
+                                        }
+                                        else
+                                        {
+                                            const q1Fix = document.getElementById('q1Fix');
+                                            const q2Fix = document.getElementById('q2Fix');
+                                            const q3Fix = document.getElementById('q3Fix');
+                                            const q4Fix = document.getElementById('q4Fix');
+                                            const q5Fix = document.getElementById('q5Fix');
+                                            const q6Fix = document.getElementById('q6Fix');
+
+                                            q1Fix.value = null;
+                                            q2Fix.value = null;
+                                            q3Fix.value = null;
+                                            q4Fix.value = null;
+                                            q5Fix.value = null;
+                                            q6Fix.value = null;
+
+                                            const q1ContainerFix = document.getElementById('q1ContainerFix').style.display = 'none';
+                                            const q2ContainerFix = document.getElementById('q2ContainerFix').style.display = 'none';
+                                            const q3ContainerFix = document.getElementById('q3ContainerFix').style.display = 'none';
+                                            const q4ContainerFix = document.getElementById('q4ContainerFix').style.display = 'none';
+                                            const q5ContainerFix = document.getElementById('q5ContainerFix').style.display = 'none';
+                                            const q6ContainerFix = document.getElementById('q6ContainerFix').style.display = 'none';
+                                        };
+                                        // Memanggil perubahan status saat modal ditampilkan
+                                        statusFix.dispatchEvent(new Event('change'));
+                                    });
+                                });
+                            </script>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#myTable').DataTable();
+        });
+    </script>
+
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Menangkap peristiwa klik pada tombol C/M
+            document.querySelectorAll('.btn-primary[data-bs-toggle="modal"]').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    // Mendapatkan nilai BNF_TICKET_NO dari attribute data-bnf-ticket
+                    var bnfTicketNo = this.getAttribute('data-bnf-ticket');
+
+                    // Mengatur nilai input hidden pada formulir modal
+                    document.getElementById('bnfTicketNo').value = bnfTicketNo;
+                });
+            });
+        });
+    </script>
+
+
+    <!-- <script>
+        // Pastikan untuk memuat data sebelum halaman selesai dimuat
+        window.addEventListener('load', function () {
+            // Mengambil data dari server atau sumber data lainnya dengan AJAX
+            fetch('/api/problems') // Ganti dengan URL yang sesuai
+                .then(response => response.json())
+                .then(data => {
+                    // Memperbarui tabel dengan data yang diambil
+                    updateTable(data);
+                })
+                .catch(error => console.error(error));
+
+            // Memperbarui tabel dengan data yang diambil
+            function updateTable(data) {
+                const tbody = document.querySelector('#myTable tbody');
+                tbody.innerHTML = ''; // Kosongkan isi tabel
+
+                data.forEach(problem => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                    <td>${problem.BNF_TICKET_NO}</td>
+                    <td>${problem.PROBLEM_DT}</td>
+                    <td>${problem.SHOP_NM}</td>
+                    <td>${problem.SHIFT_CD}</td>
+                    <td>${problem.GROUP_NM}</td>
+                    <td>${problem.ASSET_ID}</td>
+                    <td>${problem.ERROR_CD}</td>
+                    <td>${problem.PROBLEM_DESCRIPTION}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#ModalCM">C/M</button>
+                    </td>
+                `;
+
+                    tbody.appendChild(tr);
+                });
+            }
+        });
+    </script> -->
+
+    <script>
+        // Mendapatkan elemen EST
+        const estInput = document.getElementById('est');
+        // Mendapatkan elemen-elemen Q1-Q6
+        const q1Container = document.getElementById('q1Container');
+        const q2Container = document.getElementById('q2Container');
+        const q3Container = document.getElementById('q3Container');
+        const q4Container = document.getElementById('q4Container');
+        const q5Container = document.getElementById('q5Container');
+        const q6Container = document.getElementById('q6Container');
+
+        const q1 = document.getElementById('q1');
+        const q2 = document.getElementById('q2');
+        const q3 = document.getElementById('q3');
+        const q4 = document.getElementById('q4');
+        const q5 = document.getElementById('q5');
+        const q6 = document.getElementById('q6');
+        
+        // Tambahkan elemen-elemen Q2-Q6 yang serupa
+
+        // Mendengarkan perubahan pada input EST
+        estInput.addEventListener('input', function () {
+            // Jika nilai EST lebih dari 10, tampilkan elemen-elemen Q1-Q6, jika tidak, sembunyikan
+            if (parseFloat(estInput.value) > 10) {
+                q1Container.style.display = 'block';
+                q2Container.style.display = 'block';
+                q3Container.style.display = 'block';
+                q4Container.style.display = 'block';
+                q5Container.style.display = 'block';
+                q6Container.style.display = 'block';
+
+                q1.required = true;
+                q2.required = true;
+                q3.required = true;
+                q4.required = true;
+                q5.required = true;
+                q6.required = true;
+
+                // Tampilkan elemen-elemen Q2-Q6 yang serupa
+            } else {
+                q1Container.style.display = 'none';
+                q2Container.style.display = 'none';
+                q3Container.style.display = 'none';
+                q4Container.style.display = 'none';
+                q5Container.style.display = 'none';
+                q6Container.style.display = 'none';
+
+                q1.required = false;
+                q2.required = false;
+                q3.required = false;
+                q4.required = false;
+                q5.required = false;
+                q6.required = false;
+
+                q1.value = null;
+                q2.value = null;
+                q3.value = null;
+                q4.value = null;
+                q5.value = null;
+                q6.value = null;
+                // Sembunyikan elemen-elemen Q2-Q6 yang serupa
+            }
+        });
+    </script>
+
+    <script>
+        // Mendapatkan elemen EST
+        const estInputEdit = document.getElementById('estEdit');
+        // Mendapatkan elemen-elemen Q1-Q6
+        const q1ContainerEdit = document.getElementById('q1ContainerEdit');
+        const q2ContainerEdit = document.getElementById('q2ContainerEdit');
+        const q3ContainerEdit = document.getElementById('q3ContainerEdit');
+        const q4ContainerEdit = document.getElementById('q4ContainerEdit');
+        const q5ContainerEdit = document.getElementById('q5ContainerEdit');
+        const q6ContainerEdit = document.getElementById('q6ContainerEdit');
+
+        const q1Edit = document.getElementById('q1Edit');
+        const q2Edit = document.getElementById('q2Edit');
+        const q3Edit = document.getElementById('q3Edit');
+        const q4Edit = document.getElementById('q4Edit');
+        const q5Edit = document.getElementById('q5Edit');
+        const q6Edit = document.getElementById('q6Edit');
+        // Tambahkan elemen-elemen Q2-Q6 yang serupa
+
+        // Mendengarkan perubahan pada input EST
+        estInputEdit.addEventListener('input', function () {
+            // Jika nilai EST lebih dari 10, tampilkan elemen-elemen Q1-Q6, jika tidak, sembunyikan
+            if (parseFloat(estInputEdit.value) > 10) {
+                q1ContainerEdit.style.display = 'block';
+                q2ContainerEdit.style.display = 'block';
+                q3ContainerEdit.style.display = 'block';
+                q4ContainerEdit.style.display = 'block';
+                q5ContainerEdit.style.display = 'block';
+                q6ContainerEdit.style.display = 'block';
+
+                q1Edit.required = true;
+                q2Edit.required = true;
+                q3Edit.required = true;
+                q4Edit.required = true;
+                q5Edit.required = true;
+                q6Edit.required = true;
+                // Tampilkan elemen-elemen Q2-Q6 yang serupa
+            } else {
+                q1ContainerEdit.style.display = 'none';
+                q2ContainerEdit.style.display = 'none';
+                q3ContainerEdit.style.display = 'none';
+                q4ContainerEdit.style.display = 'none';
+                q5ContainerEdit.style.display = 'none';
+                q6ContainerEdit.style.display = 'none';
+
+                q1Edit.required = false;
+                q2Edit.required = false;
+                q3Edit.required = false;
+                q4Edit.required = false;
+                q5Edit.required = false;
+                q6Edit.required = false;
+
+                q1Edit.value = null;
+                q2Edit.value = null;
+                q3Edit.value = null;
+                q4Edit.value = null;
+                q5Edit.value = null;
+                q6Edit.value = null;
+                // Sembunyikan elemen-elemen Q2-Q6 yang serupa
+            }
+        });
+    </script>
+
+    <script>
+        var statusDropdown = document.getElementById("status");
+
+        const estCM = document.getElementById('est')
+        const statusCM = document.getElementById('status');
+        const tmpcmCM = document.getElementById('tmpcm');
+        const fixcmCM = document.getElementById('fixcm');
+        const fixplanCM = document.getElementById('fixplan');
+        const fixactionCM = document.getElementById('fixaction');
+
+        statusDropdown.addEventListener("change", function() {
+            if (statusDropdown.value === "T") {
+                tmpcmCM.required = true;
+                fixplanCM.required = true;
+
+                fixcmCM.value = null;
+                fixactionCM.value = null;
+            } else if(statusDropdown.value === "F") {
+                tmpcmCM.required = false;
+                fixplanCM.required = true;
+                fixcmCM.required = true;
+                fixactionCM.required = true;
+
+            }
+        });
+    </script>
+
+    <script>
+        var statusDropdownEdit = document.getElementById("statusEdit");
+
+        const estCMEdit = document.getElementById('estEdit')
+        const statusCMEdit = document.getElementById('statusEdit');
+        const tmpcmCMEdit = document.getElementById('tmpcmEdit');
+        const fixcmCMEdit = document.getElementById('fixcmEdit');
+        const fixplanCMEdit = document.getElementById('fixplanEdit');
+        const fixactionCMEdit = document.getElementById('fixactionEdit');
+
+        statusDropdownEdit.addEventListener("change", function() {
+            if (statusDropdownEdit.value === "T") {
+                tmpcmCMEdit.required = true;
+                fixplanCMEdit.required = true;
+
+                fixcmCMEdit.value = null;
+                fixactionCMEdit.value = null;
+            } else if(statusDropdown.value === "F") {
+                tmpcmCMEdit.required = false;
+                fixplanCMEdit.required = true;
+
+                fixcmCMEdit.required = true;
+                fixactionCMEdit.required = true;
+
+            }
+        });
+    </script>
+
+</body>
+
+</html>

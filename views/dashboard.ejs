@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Beranda</title>
+
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:600&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    <!-- Or for RTL support -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+    <style>
+        @font-face {
+            font-family: "Montserrat";
+        }
+
+        * {
+            font-family: Montserrat;
+        }
+    </style>
+</head>
+
+<body>
+    <% if (successMessage && successMessage.length> 0) { %>
+        <div class="alert alert-success" id="flashMessage">
+            <%= successMessage %>
+        </div>
+        <script>
+            // Hapus flash data setelah beberapa detik
+            setTimeout(function () {
+                var flashMessage = document.getElementById('flashMessage');
+                if (flashMessage) {
+                    flashMessage.style.display = 'none';
+                }
+            }, 5000); // Ubah angka 5000 menjadi jumlah milidetik yang diinginkan
+        </script>
+        <% } %>
+            <div id="app">
+                <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+                    <div class="container">
+                        <a class="navbar-brand" href="">TMMIN</a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false"
+                            aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarScroll">
+                            <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll"
+                                style="--bs-scroll-height: 100px;">
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="/dashboard">Beranda</a>
+                                </li>
+                            </ul>
+                            <div class="d-flex">
+                                <ul class="navbar-nav me-auto my-lg-0">
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" role="button"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fa fa-user"></i>
+                                            <%= USER_NM %>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" href="/logout" id="logout-button">
+                                                    <i class="fa fa-sign-out-alt"></i> Logout
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+
+                <main class="py-4">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-md-12">
+                                <div class="text-end">
+                                    <button class="btn btn-primary" type="button" data-bs-toggle="modal"
+                                        data-bs-target="#ModalProblem">Input Problem</button>
+                                    <button class="btn btn-primary" type="button" data-bs-toggle="modal"
+                                        data-bs-target="#ModalWH">Input Working Hour</button>
+                                </div>
+                                <div class="card bg-success rounded text-white shadow my-4">
+                                    <div class="card-body">
+                                        <p id="welcome-message" class="h5">
+                                            <b>Selamat Datang, <%= USER_NM %></b>
+                                        </p>
+                                        <p class="h6">
+                                            Ini adalah halaman dashboard anda.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="card shadow bg-success rounded">
+                                    <div class="card-body text-white">
+                                        <p class="h5">
+                                            <i class="fa fa-chart-area"></i> Berikut jumlah berbagai data yang ada
+                                        </p>
+                                    </div>
+                                    <div class="card-body mb-3">
+                                        <div class="row">
+                                            <div class="col-sm-2 my-2">
+                                                <div class="card shadow">
+                                                    <div class="card-body">
+                                                        <i class="fa fa-circle-xmark fa-2x text-danger"></i> &nbsp;
+                                                        <b>
+                                                            <%= totalProblems %>
+                                                        </b>
+                                                        <h5 class="card-title">Problem</h5>
+                                                        <a href="/problem" class="btn btn-sm btn-primary">Lihat Data</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2 my-2">
+                                                <div class="card shadow">
+                                                    <div class="card-body">
+                                                        <i class="fa fa-circle-exclamation fa-2x text-primary"></i>
+                                                        &nbsp;
+                                                        <b>
+                                                            <%= numberOfFixProblems %>
+                                                        </b>
+                                                        <h5 class="card-title">Fix</h5>
+                                                        <a href="/fixproblem" class="btn btn-sm btn-primary">Lihat
+                                                            Data</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2 my-2">
+                                                <div class="card shadow">
+                                                    <div class="card-body">
+                                                        <i class="fa fa-triangle-exclamation fa-2x text-warning"></i>
+                                                        &nbsp;
+                                                        <b>
+                                                            <%= numberOfTemporaryProblems %>
+                                                        </b>
+                                                        <h5 class="card-title">Temporrary</h5>
+                                                        <a href="/tmpproblem" class="btn btn-sm btn-primary">Lihat
+                                                            Data</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2 my-2">
+                                                <div class="card shadow">
+                                                    <div class="card-body">
+                                                        <i class="fa fa-triangle-exclamation fa-2x text-warning"></i>
+                                                        &nbsp;
+                                                        <b>
+                                                            <%= numberOfDelayStatus %>
+                                                        </b>
+                                                        <h5 class="card-title">Delay</h5>
+                                                        <a href="/delayproblem" class="btn btn-sm btn-primary">Lihat
+                                                            Data</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2 my-2">
+                                                <div class="card shadow">
+                                                    <div class="card-body">
+                                                        <i class="fa fa-triangle-exclamation fa-2x text-warning"></i>
+                                                        &nbsp;
+                                                        <b>
+                                                            <%= numberOfOnProgressStatus %>
+                                                        </b>
+                                                        <h5 class="card-title">On Progress</h5>
+                                                        <a href="/onprogresproblem" class="btn btn-sm btn-primary">Lihat
+                                                            Data</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2 my-2">
+                                                <div class="card shadow">
+                                                    <div class="card-body">
+                                                        <i class="fa fa-circle-exclamation fa-2x text-primary"></i>
+                                                        &nbsp;
+                                                        <b>
+                                                            <%= totalDataKPI %>
+                                                        </b>
+                                                        <h5 class="card-title">Data KPI</h5>
+                                                        <a href="/datakpi" class="btn btn-sm btn-primary">Lihat Data</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+
+                <!-- Modal Problem -->
+                <div class="modal fade" id="ModalProblem" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form action="submit-problem" method="POST" id="inputproblem">
+                                <div class="modal-header">
+                                    <div class="row">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Input Problem</h1>
+                                    </div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Plant<small class="text-danger">*</small></label>
+                                        <select class="form-select" id="plant" name="SITE_NM"
+                                            aria-label="Default select example" required>
+                                            <option value="<%= SITE_NM %>">
+                                                <%= SITE_NM %>
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <div class="mb-3">
+                                            <label class="form-label">Shop<small class="text-danger">*</small></label>
+                                            <select class="form-select" id="shop" name="SHOP_NM"
+                                                aria-label="Default select example" required>
+                                                <option value="<%= SHOP_NM %>">
+                                                    <%= SHOP_NM %>
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Group<small class="text-danger">*</small></label>
+                                            <select class="form-select" id="group" name="GROUP_NM"
+                                                aria-label="Default select example" required>
+                                                <option value="<%= GROUP_NM %>">
+                                                    <%= GROUP_NM %>
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Problem Date<small
+                                                class="text-danger">*</small></label>
+                                        <input type="datetime-local" class="form-control" id="problem_date"
+                                            name="PROBLEM_DT" placeholder="Date and Time" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Shift<small class="text-danger">*</small></label>
+                                        <select class="form-select" id="shift" name="SHIFT_CD" required>
+                                            <option value="" selected hidden>Choose Shift</option>
+                                            <option value="FRE1">FRE1</option>
+                                            <option value="FRE2">FRE2</option>
+                                            <option value="FRE3">FRE3</option>
+                                            <option value="PLA1">PLA1</option>
+                                            <option value="PLA2">PLA2</option>
+                                            <option value="PLA3">PLA3</option>
+                                            <option value="UTA1">UTA1</option>
+                                            <option value="UTA2">UTA2</option>
+                                            <option value="UTA3">UTA3</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Line<small class="text-danger">*</small></label>
+                                        <select class="form-select" id="line" name="LINE_NM" required>
+                                            <option value="" selected hidden>Choose Line</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Station<small class="text-danger">*</small></label>
+                                        <select class="form-select" id="station" name="STATION_NM"
+                                            data-placeholder="Choose Station" required>
+                                            <option value=""></option>
+                                            <% stations.forEach(station=> { %>
+                                                <option value="<%= station %>">
+                                                    <%= station %>
+                                                </option>
+                                                <% }); %>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Machine<small class="text-danger">*</small></label>
+                                        <select class="form-select" id="machine" name="FE_NM"
+                                            data-placeholder="Choose Machine" required>
+                                            <option></option>
+                                            <% machines.forEach(machine=> { %>
+                                                <option value="<%= machine %>">
+                                                    <%= machine %>
+                                                </option>
+                                                <% }); %>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Error Code<small class="text-danger">*</small></label>
+                                        <input type="text" class="form-control" id="errorcode" name="ERROR_CD"
+                                            placeholder="Enter Error code" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Problem Description<small
+                                                class="text-danger">*</small></label>
+                                        <textarea class="form-control" name="PROBLEM_DESCRIPTION"
+                                            id="problemdescription" cols="10" rows="2" required></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <script>
+                        $(document).ready(function () {
+                            $('#station').each(function () {
+                                $(this).select2({
+                                    theme: 'bootstrap-5',
+                                    dropdownParent: $(this).parent(),
+                                    width: '100%',
+                                    placeholder: $(this).data('placeholder'),
+                                });
+                            });
+
+                            $('#machine').each(function () {
+                                $(this).select2({
+                                    theme: 'bootstrap-5',
+                                    dropdownParent: $(this).parent(),
+                                    width: '100%',
+                                    placeholder: $(this).data('placeholder'),
+                                });
+                            });
+                        });
+
+                    </script>
+                    <!-- views/dashboard.ejs -->
+                    <script>
+                        // Fungsi untuk membersihkan nilai input pada formulir WH
+                        function clearFormProblem() {
+                            document.getElementById("problem_date").value = null;
+                            document.getElementById("shift").value = null;
+                            document.getElementById("line").value = null;
+                            document.getElementById("station").value = null;
+                            document.getElementById("machine").value = null;
+                            document.getElementById("errorcode").value = null;
+                            document.getElementById("problemdescription").value = null;
+                        }
+
+                        // Tambahkan event listener untuk menangkap acara penutupan modal WH
+                        document.getElementById("ModalProblem").addEventListener("hidden.bs.modal", function () {
+                            clearFormProblem(); // Panggil fungsi clearFormWH saat modal ditutup
+                        });
+                    </script>
+                </div>
+
+
+                <!-- Modal WH -->
+                <div class="modal fade" id="ModalWH" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form action="submit-working-hour" method="POST" id="inputwh">
+                                <div class="modal-header">
+                                    <div class="row">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Input Working Hour</h1>
+                                    </div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div class="mb-3">
+                                            <label class="form-label">Shop<small class="text-danger">*</small></label>
+                                            <select class="form-select" id="shop" name="SHOP_NM"
+                                                aria-label="Default select example" required>
+                                                <option value="<%= SHOP_NM %>">
+                                                    <%= SHOP_NM %>
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Group<small class="text-danger">*</small></label>
+                                            <select class="form-select" id="group" name="GROUP_NM"
+                                                aria-label="Default select example" required>
+                                                <option value="<%= GROUP_NM %>">
+                                                    <%= GROUP_NM %>
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Date<small class="text-danger">*</small></label>
+                                        <input type="date" class="form-control" id="datewh" name="DT"
+                                            placeholder="Enter Date" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Shift<small class="text-danger">*</small></label>
+                                        <select class="form-select" id="shiftwh" name="SHIFT_CD" required>
+                                            <option value="" selected hidden>Choose Shift</option>
+                                            <option value="FRE1">FRE1</option>
+                                            <option value="FRE2">FRE2</option>
+                                            <option value="FRE3">FRE3</option>
+                                            <option value="PLA1">PLA1</option>
+                                            <option value="PLA2">PLA2</option>
+                                            <option value="PLA3">PLA3</option>
+                                            <option value="UTA1">UTA1</option>
+                                            <option value="UTA2">UTA2</option>
+                                            <option value="UTA3">UTA3</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">LST<small class="text-danger">*</small></label>
+                                        <input type="number" step="0.1" class="form-control" id="lstwh" name="LST"
+                                            placeholder="Enter LST" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Working Hour<small
+                                                class="text-danger">*</small></label>
+                                        <input type="number" step="0.1" class="form-control" id="wh" name="WH"
+                                            placeholder="Enter Working Hour" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Working Hour 1C<small
+                                                class="text-danger">*</small></label>
+                                        <input type="number" step="0.1" class="form-control" id="wh1c" name="WH_1C"
+                                            placeholder="Enter Working Hour 1C" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Working Hour 2A<small
+                                                class="text-danger">*</small></label>
+                                        <input type="number" step="0.1" class="form-control" id="wh2a" name="WH_2A"
+                                            placeholder="Enter Working Hour 2A" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Working Hour 5A<small
+                                                class="text-danger">*</small></label>
+                                        <input type="number" step="0.1" class="form-control" id="wh5a" name="WH_5A"
+                                            placeholder="Enter Working Hour 5A" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <script>
+                        // Fungsi untuk membersihkan nilai input pada formulir WH
+                        function clearFormWH() {
+                            document.getElementById("datewh").value = null;
+                            document.getElementById("shiftwh").value = null;
+                            document.getElementById("lstwh").value = null;
+                            document.getElementById("wh").value = null;
+                            document.getElementById("wh1c").value = null;
+                            document.getElementById("wh2a").value = null;
+                            document.getElementById("wh5a").value = null;
+                        }
+
+                        // Tambahkan event listener untuk menangkap acara penutupan modal WH
+                        document.getElementById("ModalWH").addEventListener("hidden.bs.modal", function () {
+                            clearFormWH(); // Panggil fungsi clearFormWH saat modal ditutup
+                        });
+
+                        document.getElementById('shop').addEventListener('change', function () {
+                            const workingHourInput = document.getElementById('wh');
+                            const wh1cInput = document.getElementById('wh1c');
+                            const wh2aInput = document.getElementById('wh2a');
+                            const wh5aInput = document.getElementById('wh5a');
+
+                            if (this.value === 'PRESS') {
+                                workingHourInput.value = '0';
+                                wh1cInput.value = '';
+                                wh2aInput.value = '';
+                                wh5aInput.value = '';
+                            } else {
+                                workingHourInput.value = '';
+                                wh1cInput.value = '0';
+                                wh2aInput.value = '0';
+                                wh5aInput.value = '0';
+                            }
+                        });
+                    </script>
+                </div>
+            </div>
+
+            <Script>
+                var shop = document.getElementById('shop');
+                var line = document.getElementById('line');
+
+                function setDefaultOptions() {
+                    line.innerHTML = "";
+                    line.innerHTML = '<option value = "">Choose Line</option>';
+
+                    if (shop.value == 'PRESS') {
+                        line.innerHTML += `<option value="1C">1C</option>
+                                        <option value="2A">2A</option>
+                                        <option value="5A">5A</option>`
+
+                    } else if (shop.value == 'WELDING BODY #1') {
+                        line.innerHTML += `<option value="UNDER BODY FINAL 1">UNDER BODY FINAL 1</option>
+                                        <option value="SHELL BODY FINAL 1">SHELL BODY FINAL 1</option>
+                                        <option value="MAIN BODY FINAL 1">MAIN BODY FINAL 1</option>
+                                        <option value="SHELL BODY SUB ASSY 1">SHELL BODY SUB ASSY 1</option>
+                                        <option value="SIDE MEMBER SUB ASSY 1">SIDE MEMBER SUB ASSY 1</option>
+                                        <option value="RONOJI SUB ASSY 1">RONOJI SUB ASSY 1</option>
+                                        <option value="ROOF SUB ASSY 1">ROOF SUB ASSY 1</option>
+                                        <option value="UNDER REAR SUB ASSY 1">UNDER REAR SUB ASSY 1</option>
+                                        <option value="UNDER FRONT SUB ASSY 1">UNDER FRONT SUB ASSY 1</option>`
+                    } else if (shop.value == 'WELDING BODY #2') {
+                        line.innerHTML += `<option value="UNDER BODY FINAL 2">UNDER BODY FINAL 2</option>
+                                        <option value="SHELL BODY FINAL 2">SHELL BODY FINAL 2</option>
+                                        <option value="MAIN BODY FINAL 2 ">MAIN BODY FINAL 2</option>
+                                        <option value="SHELL BODY SUB ASSY 2">SHELL BODY SUB ASSY 2</option>
+                                        <option value="SIDE MEMBER SUB ASSY 2">SIDE MEMBER SUB ASSY 2</option>
+                                        <option value="RONOJI SUB ASSY 2">RONOJI SUB ASSY 2</option>
+                                        <option value="ROOF SUB ASSY 2">ROOF SUB ASSY 2</option>
+                                        <option value="UNDER REAR SUB ASSY 2">UNDER REAR SUB ASSY 2</option>
+                                        <option value="UNDER FRONT SUB ASSY 2">UNDER FRONT SUB ASSY 2</option>`
+                    } else if (shop.value == 'FRAME') {
+                        line.innerHTML += `<option value="ED">ED</option>
+                                        <option value="Zone1">Zone1</option>
+                                        <option value="Zone2">Zone2</option>
+                                        <option value="Zone3">Zone3</option>
+                                        <option value="Unit">Unit</option>`
+                    }
+                };
+                setDefaultOptions();
+            </Script>
+
+</body>
+
+
+</html>

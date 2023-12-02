@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-input[type="submit"] {
+            background-color: #333;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-input[type="submit"]:hover {
+            background-color: #555;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #333;
+            text-decoration: none;
+        }
+    </style>
+    <title>Login</title>
+</head>
+<body>
+    <% if (successMessage && successMessage.length > 0) { %>
+        <div class="alert alert-success" id="flashMessage">
+            <%= successMessage %>
+        </div>
+        <script>
+            // Hapus flash data setelah beberapa detik
+            setTimeout(function() {
+                var flashMessage = document.getElementById('flashMessage');
+                if (flashMessage) {
+                    flashMessage.style.display = 'none';
+                }
+            }, 5000); // Ubah angka 5000 menjadi jumlah milidetik yang diinginkan
+        </script>
+    <% } %>
+    <h1>Login</h1>
+    <form action="submit-login" method="post" id="login">
+        <div class="form-group">
+            <label class="form-label">Username:
+                <input type="text" id="name" name="USER_ID" autocomplete="username" placeholder="Name" class="form-control" required />
+            </label>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Password:
+                <input type="password" id="password" name="PASSWORD" autocomplete="current-password" placeholder="Password" class="form-control" required />
+            </label>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </div>        
+        <a href="/register">Daftar</a>
+    </form>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+</body>
+</html>
