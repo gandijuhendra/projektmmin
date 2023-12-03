@@ -45,15 +45,23 @@ module.exports = {
       },
       WH: {
         type: Sequelize.FLOAT(2),
+        allowNull: false,
+        defaultValue: 0
       },
       WH_1C: {
         type: Sequelize.FLOAT(2),
+        allowNull: false,
+        defaultValue: 0
       },
       WH_2A: {
         type: Sequelize.FLOAT(2),
+        allowNull: false,
+        defaultValue: 0
       },
       WH_5A: {
         type: Sequelize.FLOAT(2),
+        allowNull: false,
+        defaultValue: 0
       },
       ESN_SMALL: {
         type: Sequelize.INTEGER,

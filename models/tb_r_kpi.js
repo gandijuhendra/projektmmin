@@ -22,10 +22,26 @@ module.exports = (sequelize, DataTypes) => {
     EST: DataTypes.FLOAT(2),
     LST: DataTypes.FLOAT(2),
     ESN: DataTypes.INTEGER,
-    WH: DataTypes.FLOAT(2),
-    WH_1C: DataTypes.FLOAT(2),
-    WH_2A: DataTypes.FLOAT(2),
-    WH_5A: DataTypes.FLOAT(2),
+    WH:{
+      type:DataTypes.FLOAT(2),
+      allowNull: false,
+      defaultValue: 0
+    },
+    WH_1C:{
+      type:DataTypes.FLOAT(2),
+      allowNull: false,
+      defaultValue: 0
+    },
+    WH_2A:{
+      type:DataTypes.FLOAT(2),
+      allowNull: false,
+      defaultValue: 0
+    },
+    WH_5A:{
+      type:DataTypes.FLOAT(2),
+      allowNull: false,
+      defaultValue: 0
+    },
     ESN_SMALL: DataTypes.INTEGER,
     ESN_LTR: DataTypes.INTEGER,
     ESN_SLTR: DataTypes.INTEGER,

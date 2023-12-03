@@ -132,7 +132,7 @@
                                             <div class="col-sm-2 my-2">
                                                 <div class="card shadow">
                                                     <div class="card-body">
-                                                        <i class="fa fa-circle-exclamation fa-2x text-primary"></i>
+                                                        <i class="fa fa-circle-check fa-2x text-success"></i>
                                                         &nbsp;
                                                         <b>
                                                             <%= numberOfFixProblems %>
@@ -160,7 +160,7 @@
                                             <div class="col-sm-2 my-2">
                                                 <div class="card shadow">
                                                     <div class="card-body">
-                                                        <i class="fa fa-triangle-exclamation fa-2x text-warning"></i>
+                                                        <i class="fa fa-triangle-exclamation fa-2x text-danger"></i>
                                                         &nbsp;
                                                         <b>
                                                             <%= numberOfDelayStatus %>
@@ -188,7 +188,7 @@
                                             <div class="col-sm-2 my-2">
                                                 <div class="card shadow">
                                                     <div class="card-body">
-                                                        <i class="fa fa-circle-exclamation fa-2x text-primary"></i>
+                                                        <i class="fa fa-circle-check fa-2x text-success"></i>
                                                         &nbsp;
                                                         <b>
                                                             <%= totalDataKPI %>
@@ -472,22 +472,97 @@
                             clearFormWH(); // Panggil fungsi clearFormWH saat modal ditutup
                         });
 
+
+                        const workingHourInput = document.getElementById('wh');
+                        const wh1cInput = document.getElementById('wh1c');
+                        const wh2aInput = document.getElementById('wh2a');
+                        const wh5aInput = document.getElementById('wh5a');
+
+                        const shopInput = document.getElementById('shop')
+
+                        if (shopInput.value === 'PRESS') {
+                            workingHourInput.value = '0';
+                            workingHourInput.disabled = true;
+                                wh1cInput.value = '';
+                            wh1cInput.disabled = false;
+                            wh2aInput.value = '';
+                            wh2aInput.disabled = false;
+                            wh5aInput.value = '';
+                            wh5aInput.disabled = false;
+                        } else {
+                            workingHourInput.value = '';
+                            workingHourInput.disabled = false;
+                                wh1cInput.value = '0';
+                            wh1cInput.disabled = true;
+                            wh2aInput.value = '0';
+                            wh2aInput.disabled = true;
+                            wh5aInput.value = '0';
+                            wh5aInput.disabled = true;
+                        }
+
+                        workingHourInput.addEventListener('change', () => {
+                            if (shopInput === 'PRESS') {
+                                return
+                            }
+                            if (workingHourInput.value <= 350) {
+                                workingHourInput.value = 350
+                            } else if (workingHourInput.value >= 615) {
+                                workingHourInput.value = 615
+                            }
+                        })
+
+                        wh1cInput.addEventListener('change', () => {
+                            if (shopInput === 'PRESS') {
+                                return
+                            }
+                            if (wh1cInput.value <= 350) {
+                                wh1cInput.value = 350
+                            } else if (wh1cInput.value >= 615) {
+                                wh1cInput.value = 615
+                            }
+                        })
+
+                        wh2aInput.addEventListener('change', () => {
+                            if (shopInput === 'PRESS') {
+                                return
+                            }
+                            if (wh2aInput.value <= 350) {
+                                wh2aInput.value = 350
+                            } else if (wh2aInput.value >= 615) {
+                                wh2aInput.value = 615
+                            }
+                        })
+                        wh5aInput.addEventListener('change', () => {
+                            if (shopInput === 'PRESS') {
+                                return
+                            }
+                            if (wh5aInput.value <= 350) {
+                                wh5aInput.value = 350
+                            } else if (wh5aInput.value >= 615) {
+                                wh5aInput.value = 615
+                            }
+                        })
+
                         document.getElementById('shop').addEventListener('change', function () {
-                            const workingHourInput = document.getElementById('wh');
-                            const wh1cInput = document.getElementById('wh1c');
-                            const wh2aInput = document.getElementById('wh2a');
-                            const wh5aInput = document.getElementById('wh5a');
 
                             if (this.value === 'PRESS') {
                                 workingHourInput.value = '0';
-                                wh1cInput.value = '';
+                                workingHourInput.disabled = true,
+                                    wh1cInput.value = '';
+                                wh1cInput.disabled = false;
                                 wh2aInput.value = '';
+                                wh2aInput.disabled = false;
                                 wh5aInput.value = '';
+                                wh5aInput.disabled = false;
                             } else {
                                 workingHourInput.value = '';
-                                wh1cInput.value = '0';
+                                workingHourInput.disabled = false,
+                                    wh1cInput.value = '0';
+                                wh1cInput.disabled = true;
                                 wh2aInput.value = '0';
+                                wh2aInput.disabled = true;
                                 wh5aInput.value = '0';
+                                wh5aInput.disabled = true;
                             }
                         });
                     </script>
