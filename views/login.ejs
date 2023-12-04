@@ -65,25 +65,11 @@
     <title>Login</title>
 </head>
 <body>
-    <% if (successMessage && successMessage.length > 0) { %>
-        <div class="alert alert-success" id="flashMessage">
-            <%= successMessage %>
-        </div>
-        <script>
-            // Hapus flash data setelah beberapa detik
-            setTimeout(function() {
-                var flashMessage = document.getElementById('flashMessage');
-                if (flashMessage) {
-                    flashMessage.style.display = 'none';
-                }
-            }, 5000); // Ubah angka 5000 menjadi jumlah milidetik yang diinginkan
-        </script>
-    <% } %>
     <h1>Login</h1>
     <form action="submit-login" method="post" id="login">
         <div class="form-group">
             <label class="form-label">Username:
-                <input type="text" id="name" name="USER_ID" autocomplete="username" placeholder="Name" class="form-control" required />
+                <input type="text" id="name" name="USER_ID" autocomplete="username" placeholder="Username" class="form-control" required />
             </label>
         </div>
         <div class="form-group">
