@@ -307,13 +307,6 @@ app.post('/submit-problem', async (req, res) => {
 
         console.log(user);
 
-        // Hitung jumlah masalah yang sudah ada untuk toko tertentu
-        const existingProblems = await TB_R_PROBLEM.count({
-            where: {
-                SHOP_NM: SHOP_NM
-            }
-        });
-
         // Bentuk BNF_TICKET_NO
         const shopCodePart = shop.SHOP_CD; 
         const time = new Date(Date.now())
