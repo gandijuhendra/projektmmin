@@ -315,10 +315,10 @@ app.post('/submit-problem', async (req, res) => {
         });
 
         // Bentuk BNF_TICKET_NO
-        const uniquePart = (10000 + existingProblems + 1).toString().substr(1); // Mendapatkan 4 digit unik
-        const shopCodePart = shop.SHOP_CD; // Mendapatkan 4 digit SHOP_CD
-
-        const BNF_TICKET_NO = uniquePart + shopCodePart;
+        const shopCodePart = shop.SHOP_CD; 
+        const time = new Date(Date.now())
+        const string = `${ time.getTime() }`
+        const BNF_TICKET_NO = `${ string.slice(-8) }` + shopCodePart;
 
         // Mendapatkan COMPANY_CD (di default '4009')
         const COMPANY_CD = '4009';
@@ -388,7 +388,6 @@ app.post('/submit-problem', async (req, res) => {
     }
 });
 
-// ...
 // Handler untuk menghandle POST request dari formulir
 app.post('/submit-working-hour', async (req, res) => {
     const { SHOP_NM, GROUP_NM, DT, SHIFT_CD, LST, WH, WH_1C, WH_2A, WH_5A } = req.body;
@@ -566,14 +565,14 @@ async function calculateProbCatCode(estValue, bnfTicketNo, problemDt, sequelize)
                 BNF_TICKET_NO: bnfTicketNo,
             },
         });
-    
+
         if (!assetIdData) {
             console.log('Data tidak ditemukan di TB_R_PROBLEM.');
             return;
         }
-    
+
         const assetId = assetIdData.ASSET_ID;
-    
+
         // Mendapatkan ERROR_CD dari TB_R_CM
         const errorCdData = await TB_R_CM.findOne({
             attributes: ['ERROR_CD'],
@@ -581,12 +580,12 @@ async function calculateProbCatCode(estValue, bnfTicketNo, problemDt, sequelize)
                 BNF_TICKET_NO: bnfTicketNo,
             },
         });
-    
+
         if (!errorCdData) {
             console.log('Data tidak ditemukan di TB_R_CM.');
             return;
         }
-    
+
         const errorCd = errorCdData.ERROR_CD;
         // Tambahkan logika tambahan
         const countSameWeekProblems = await TB_R_PROBLEM.count({
@@ -598,18 +597,19 @@ async function calculateProbCatCode(estValue, bnfTicketNo, problemDt, sequelize)
                     [Op.lte]: moment(problemDt).endOf('week').toDate(),
                 },
             },
-            include: [{
-                model: TB_R_CM,
-                attributes: [],
-                where: {
-                    BNF_TICKET_NO: { [Op.ne]: bnfTicketNo }, // BNF_TICKET_NO harus berbeda
-                    ERROR_CD: errorCd,
+            include: [
+                {
+                    model: TB_R_CM,
+                    attributes: [],
+                    where: {
+                        BNF_TICKET_NO: { [Op.ne]: bnfTicketNo }, // BNF_TICKET_NO harus berbeda
+                        ERROR_CD: errorCd,
+                    },
                 },
-            }],
+            ],
         });
-        
 
-        console.log("Hasil Hitungan:" + countSameWeekProblems);
+        console.log('Hasil Hitungan:' + countSameWeekProblems);
 
         if (countSameWeekProblems >= 2) {
             return 4;
@@ -627,8 +627,22 @@ app.post('/submit-cm', async (req, res) => {
         TMP_CM,
         FIX_CM,
         FIX_CM_PLAN,
-        FIX_CM_ACT
+        FIX_CM_ACT,
+
     } = req.body;
+
+
+    // Jika data sudah ada, update nilai Q1-Q6 di TB_R_LTR
+    const problem = await TB_R_PROBLEM.findOne({
+        where: {
+            BNF_TICKET_NO
+        }
+    });
+
+    console.log(problem, 'ini problem')
+
+
+    const { PROBLEM_DT } = problem
 
     try {
         // Update TB_R_PROBLEM
@@ -636,7 +650,7 @@ app.post('/submit-cm', async (req, res) => {
             EST,
             CM_STS: CM_NM,
             TICKET_STS: 1,
-            PROB_CAT_CD: await calculateProbCatCode(parseFloat(EST), BNF_TICKET_NO, req.body.PROBLEM_DT, sequelize)
+            PROB_CAT_CD: await calculateProbCatCode(parseFloat(EST), BNF_TICKET_NO, PROBLEM_DT)
         };
         const whereConditionTB_R_PROBLEM = {
             BNF_TICKET_NO
@@ -650,7 +664,7 @@ app.post('/submit-cm', async (req, res) => {
         const updateDataTB_R_CM = {
             TMP_CM,
             FIX_CM,
-            PROB_CAT_CD: await calculateProbCatCode(parseFloat(EST), BNF_TICKET_NO, req.body.PROBLEM_DT, sequelize)
+            PROB_CAT_CD: await calculateProbCatCode(parseFloat(EST), BNF_TICKET_NO, PROBLEM_DT)
         };
         const whereConditionTB_R_CM = {
             BNF_TICKET_NO
@@ -667,9 +681,17 @@ app.post('/submit-cm', async (req, res) => {
 
         // Update LAST_UPDATE_DT and FIX_CM_NM based on CM_NM value
         const currentDate = new Date();
+        const fixPlanDate = new Date(updateDataTB_R_CM.FIX_CM_PLAN);
+
         if (CM_NM === 'T') {
             updateDataTB_R_CM.LAST_UPDATE_DT = currentDate;
-            updateDataTB_R_CM.FIX_CM_NM = 'On Progress';
+
+            // Cek apakah LAST_UPDATE_DT melewati FIX_CM_PLAN
+            if (currentDate > fixPlanDate) {
+                updateDataTB_R_CM.FIX_CM_NM = 'Delay';
+            } else {
+                updateDataTB_R_CM.FIX_CM_NM = 'On Progress';
+            }
         } else if (CM_NM === 'F') {
             updateDataTB_R_CM.LAST_UPDATE_DT = currentDate;
             updateDataTB_R_CM.FIX_CM_NM = 'Solved';
@@ -680,14 +702,7 @@ app.post('/submit-cm', async (req, res) => {
         });
 
         // Jika nilai EST lebih dari 10, cek apakah sudah ada data di TB_R_LTR
-        if (parseFloat(EST) > 10) {
-            const problemData = await TB_R_PROBLEM.findOne({
-                attributes: ['PROBLEM_DT'],
-                where: {
-                    BNF_TICKET_NO
-                }
-            });
-
+        if (parseFloat(EST) >= 10) {
             const ltrData = await TB_R_LTR.findOne({
                 where: {
                     BNF_TICKET_NO
@@ -695,7 +710,7 @@ app.post('/submit-cm', async (req, res) => {
             });
 
             if (ltrData) {
-                // Jika data sudah ada, update nilai Q1-Q6 di TB_R_LTR
+                console.log(problem, 'ini problem')
                 const updateDataTB_R_LTR = {
                     Q1: req.body.Q1,
                     Q2: req.body.Q2,
@@ -703,7 +718,7 @@ app.post('/submit-cm', async (req, res) => {
                     Q4: req.body.Q4,
                     Q5: req.body.Q5,
                     Q6: req.body.Q6,
-                    PROBLEM_DT: problemData.PROBLEM_DT
+                    PROBLEM_DT: problem.PROBLEM_DT
                 };
 
                 await TB_R_LTR.update(updateDataTB_R_LTR, {
@@ -715,7 +730,7 @@ app.post('/submit-cm', async (req, res) => {
                 // Jika data belum ada, sisipkan baris baru ke TB_R_LTR
                 await TB_R_LTR.create({
                     BNF_TICKET_NO,
-                    PROBLEM_DT: problemData.PROBLEM_DT,
+                    PROBLEM_DT,
                     Q1: req.body.Q1,
                     Q2: req.body.Q2,
                     Q3: req.body.Q3,
@@ -727,7 +742,6 @@ app.post('/submit-cm', async (req, res) => {
         }
 
         req.flash('success', 'Data successfully uploaded!');
-
         res.redirect('/problem'); // Redirect ke halaman problem setelah pembaruan
     } catch (error) {
         console.error('Error during Counter Measure submission:', error);
@@ -742,21 +756,21 @@ app.post('/submit-edit', async (req, res) => {
         CM_NM,
         TMP_CM,
         FIX_CM,
+        FIX_CM_PLAN,
         FIX_CM_ACT,
         PRODUCTION_ID
     } = req.body;
-
-    const { FIX_CM_PLAN } = req.body;
 
     console.log("FIX_CM_PLAN in submit-edit:", FIX_CM_PLAN);
 
     try {
         // Update TB_R_PROBLEM
+        const probCatCodeTB_R_PROBLEM = await calculateProbCatCode(parseFloat(EST), BNF_TICKET_NO, req.body.PROBLEM_DT, sequelize);
         const updateDataTB_R_PROBLEM = {
             EST,
             CM_STS: CM_NM,
             TICKET_STS: 1,
-            PROB_CAT_CD: calculateProbCatCode(parseFloat(EST))
+            PROB_CAT_CD: probCatCodeTB_R_PROBLEM
         };
         const whereConditionTB_R_PROBLEM = {
             BNF_TICKET_NO
@@ -767,10 +781,11 @@ app.post('/submit-edit', async (req, res) => {
         });
 
         // Update TB_R_CM
+        const probCatCodeTB_R_CM = await calculateProbCatCode(parseFloat(EST), BNF_TICKET_NO, req.body.PROBLEM_DT, sequelize);
         const updateDataTB_R_CM = {
             TMP_CM,
             FIX_CM,
-            PROB_CAT_CD: calculateProbCatCode(parseFloat(EST))
+            PROB_CAT_CD: probCatCodeTB_R_CM
         };
         const whereConditionTB_R_CM = {
             BNF_TICKET_NO
@@ -780,7 +795,6 @@ app.post('/submit-edit', async (req, res) => {
 
         // Validasi tanggal FIX_CM_PLAN dan FIX_CM_ACT
         if (isValidDate(FIX_CM_PLAN)) {
-            console.log("console0");
             updateDataTB_R_CM.FIX_CM_PLAN = FIX_CM_PLAN;
         }
 
@@ -793,9 +807,8 @@ app.post('/submit-edit', async (req, res) => {
             if (isValidDate(FIX_CM_ACT) && isValidDate(FIX_CM_PLAN)) {
                 updateDataTB_R_CM.LAST_UPDATE_DT = currentDate;
                 updateDataTB_R_CM.FIX_CM_NM = 'Solved';
-                console.log("console3");
                 // Jika nilai dari calculateProbCatCode(parseFloat(EST)) bernilai 1
-                if (calculateProbCatCode(parseFloat(EST)) === 1) {
+                if (probCatCodeTB_R_CM === 1) {
                     await TB_R_KPI.increment('SOLVED_SLTR', {
                         by: 1,
                         where: {
@@ -804,7 +817,7 @@ app.post('/submit-edit', async (req, res) => {
                     });
                 }
                 // Jika nilai dari calculateProbCatCode(parseFloat(EST)) bernilai 2
-                else if (calculateProbCatCode(parseFloat(EST)) === 2) {
+                else if (probCatCodeTB_R_CM === 2) {
                     await TB_R_KPI.increment('SOLVED_LTR', {
                         by: 1,
                         where: {
@@ -813,7 +826,7 @@ app.post('/submit-edit', async (req, res) => {
                     });
                 }
                 // Jika nilai dari calculateProbCatCode(parseFloat(EST)) bernilai 3
-                else if (calculateProbCatCode(parseFloat(EST)) === 3) {
+                else if (probCatCodeTB_R_CM === 3) {
                     await TB_R_KPI.increment('SOLVED_SMALL', {
                         by: 1,
                         where: {
@@ -822,7 +835,7 @@ app.post('/submit-edit', async (req, res) => {
                     });
                 }
                 // Jika nilai dari calculateProbCatCode(parseFloat(EST)) bernilai 4
-                else if (calculateProbCatCode(parseFloat(EST)) === 4) {
+                else if (probCatCodeTB_R_CM === 4) {
                     await TB_R_KPI.increment('SOLVED_REPEAT', {
                         by: 1,
                         where: {

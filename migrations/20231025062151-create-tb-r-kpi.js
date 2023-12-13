@@ -27,7 +27,7 @@ module.exports = {
           model: 'TB_M_WORK_SHIFT',
           key: 'SHIFT_CD'
         },
-        allowNull: true
+        allowNull: false
       }, 
       GROUP_NM: {
         type: Sequelize.STRING(10),

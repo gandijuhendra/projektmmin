@@ -94,7 +94,8 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                                     aria-expanded="false">
-                                    <i class="fa fa-user"></i> Profil
+                                    <i class="fa fa-user"></i>
+                                    <%= USER_NM %>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li>
@@ -141,8 +142,9 @@
                                         <table id="myTable" class="table table-hover table-bordered cell-border">
                                             <thead>
                                                 <tr>
+                                                    <th>No</th>
                                                     <th>BNF Ticket No</th>
-                                                    <th>Problem Date</th>
+                                                    <th>Date</th>
                                                     <th>Shop</th>
                                                     <th>Shift</th>
                                                     <th>Group</th>
@@ -158,12 +160,13 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <% combinedData.forEach(data=> { %>
+                                                <% combinedData.forEach((data, index)=> { %>
                                                     <tr>
-                                                        <td style="min-width: 140px;">
+                                                        <td><%= index + 1  %></td>
+                                                        <td style="min-width: 50px;">
                                                             <%= data.BNF_TICKET_NO %>
                                                         </td>
-                                                        <td style="min-width: 135px;">
+                                                        <td style="min-width: 50px;">
                                                             <%= data.PROBLEM_DT %>
                                                         </td>
                                                         <td>
@@ -184,7 +187,7 @@
                                                         <td>
                                                             <%= data.FE_NM %>
                                                         </td>
-                                                        <td style="min-width: 120px;">
+                                                        <td style="min-width: 80px;">
                                                             <%= data.ERROR_CD %>
                                                         </td>
                                                         <td>

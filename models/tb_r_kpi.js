@@ -17,7 +17,10 @@ module.exports = (sequelize, DataTypes) => {
     PRODUCTION_ID: DataTypes.STRING(20),
     DT: DataTypes.DATE,
     SHOP_NM: DataTypes.STRING(25),
-    SHIFT_CD: DataTypes.STRING(5),
+    SHIFT_CD: {
+      type: DataTypes.STRING(5),
+      allowNull: false
+    },
     GROUP_NM: DataTypes.STRING(10),
     EST: DataTypes.FLOAT(2),
     LST: DataTypes.FLOAT(2),
